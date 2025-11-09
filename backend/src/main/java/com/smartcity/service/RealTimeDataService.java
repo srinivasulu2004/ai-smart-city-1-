@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -13,25 +14,29 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class RealTimeDataService {
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
-    private CityOperationService operationService;
-
-    @Autowired
-    private TrafficService trafficService;
-
-    @Autowired
-    private AlertService alertService;
-
-    @Autowired
-    private IoTService iotService;
-
-    @Autowired
-    private EmergencyService emergencyService;
+    private final CityOperationService operationService;
+    private final TrafficService trafficService;
+    private final AlertService alertService;
+    private final IoTService iotService;
+    private final EmergencyService emergencyService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final Random random = new Random();
+
+    @Autowired
+    public RealTimeDataService(@Lazy CityOperationService operationService,
+                              @Lazy TrafficService trafficService,
+                              @Lazy AlertService alertService,
+                              @Lazy IoTService iotService,
+                              @Lazy EmergencyService emergencyService,
+                              SimpMessagingTemplate messagingTemplate) {
+        this.operationService = operationService;
+        this.trafficService = trafficService;
+        this.alertService = alertService;
+        this.iotService = iotService;
+        this.emergencyService = emergencyService;
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @Scheduled(fixedRate = 5000)
     public void broadcastOperationsUpdate() {
